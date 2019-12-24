@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 
 import com.bun.miitmdid.core.JLibrary;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OaidHelper {
     private static final OaidHelper ourInstance = new OaidHelper();
 
@@ -16,22 +19,6 @@ public class OaidHelper {
     }
 
     private OaidHelper() {
-    }
-
-    private String oaid;
-
-    private boolean isSupportOaid;
-
-    public String getOaid() {
-        String result = "";
-        if (isSupportOaid && !TextUtils.isEmpty(oaid)) {
-            result = oaid;
-        }
-        return result;
-    }
-
-    public void setIsSupportOaid(boolean isSupportOaid) {
-        this.isSupportOaid = isSupportOaid;
     }
 
     public void attachBaseContext(Context base) {
@@ -44,12 +31,29 @@ public class OaidHelper {
         miitHelper.getDeviceIds(context);
     }
 
+
+    private List<OaidListener> mListener = new ArrayList<>();
+
+    public void addOaidListener(OaidListener listener) {
+        if (listener != null) {
+            mListener.add(listener);
+        }
+    }
+
+    public interface OaidListener {
+        void onOaid(String oaid);
+    }
+
     private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
         @Override
         public void onOaid(boolean isSupport, @NonNull String oaid) {
-            setIsSupportOaid(isSupport);
             Log.i("OaidHelper oaid===  ", oaid);
-            OaidHelper.this.oaid = oaid;
+            if (!isSupport || TextUtils.isEmpty(oaid)) {
+                return;
+            }
+            for (int i = 0; i < mListener.size(); i++) {
+                mListener.get(i).onOaid(oaid);
+            }
         }
 
         @Override

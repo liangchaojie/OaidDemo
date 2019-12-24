@@ -7,9 +7,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.hgb.oaiddemo.rxpermissions2.RxPermissions;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -77,7 +79,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
                         //根据结果去做相应处理。
-                        tvContent.setText(String.format("oaid: %s", OaidHelper.getInstance().getOaid()));
+                        OaidHelper.getInstance().addOaidListener(new OaidHelper.OaidListener() {
+                            @Override
+                            public void onOaid(String oaid) {
+                                tvContent.setText(String.format("oaid: %s", oaid));
+                            }
+                        });
+
                     }
                 });
     }
