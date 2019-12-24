@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
                         //根据结果去做相应处理。
-                        tvContent.setText("idfa: " + DevicesUtil.getIdfa(mContext));
+                        tvContent.setText(String.format("oaid: %s", OaidHelper.getInstance().getOaid()));
                     }
                 });
     }

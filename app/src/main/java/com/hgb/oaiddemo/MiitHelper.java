@@ -31,15 +31,15 @@ public class MiitHelper implements IIdentifierListener {
         long timee = System.currentTimeMillis();
         long offset = timee - timeb;
         if (nres == ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT) {//1008612 不支持的设备
-            MyApplication.setIsSupportOaid(false);
+            OaidHelper.getInstance().setIsSupportOaid(false);
         } else if (nres == ErrorCode.INIT_ERROR_LOAD_CONFIGFILE) {//1008613 加载配置文件出错
-            MyApplication.setIsSupportOaid(false);
+            OaidHelper.getInstance().setIsSupportOaid(false);
         } else if (nres == ErrorCode.INIT_ERROR_MANUFACTURER_NOSUPPORT) {//1008611 不支持的设备厂商
-            MyApplication.setIsSupportOaid(false);
+            OaidHelper.getInstance().setIsSupportOaid(false);
         } else if (nres == ErrorCode.INIT_ERROR_RESULT_DELAY) {//1008614 获取接口是异步的，结果会在回调中返回，回调执行的回调可能在工作线程
-            MyApplication.setIsSupportOaid(false);
+            OaidHelper.getInstance().setIsSupportOaid(false);
         } else if (nres == ErrorCode.INIT_HELPER_CALL_ERROR) {//1008615 反射调用出错
-            MyApplication.setIsSupportOaid(false);
+            OaidHelper.getInstance().setIsSupportOaid(false);
         }
         Log.d(getClass().getSimpleName(), "return value: " + String.valueOf(nres));
 
@@ -68,6 +68,9 @@ public class MiitHelper implements IIdentifierListener {
     @Override
     public void OnSupport(boolean isSupport, IdSupplier _supplier) {
         if (_supplier == null) {
+            if (_listener != null) {
+                _listener.onError("_supplier == null");
+            }
             return;
         }
        /* String oaid=_supplier.getOaid();
@@ -84,12 +87,14 @@ public class MiitHelper implements IIdentifierListener {
         String oaid = _supplier.getOAID();
         _supplier.shutDown();           //关闭接口
         if (_listener != null) {
-            _listener.OnIdsAvalid(oaid);
+            _listener.onOaid(isSupport,oaid);
         }
     }
 
     public interface AppIdsUpdater {
-        void OnIdsAvalid(@NonNull String ids);
+        void onOaid(boolean isSupport, @NonNull String oaid);
+
+        void onError(@NonNull String error);
     }
 
 }

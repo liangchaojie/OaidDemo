@@ -16,45 +16,16 @@ import com.bun.miitmdid.core.JLibrary;
  */
 public class MyApplication extends Application {
 
-    private static String oaid;
-
-
-    private static boolean isSupportOaid;
-
-    public static String getOaid() {
-        return oaid;
-    }
-
-    public static boolean isSupportOaid() {
-        return isSupportOaid;
-    }
-
-    public static void setIsSupportOaid(boolean isSupportOaid) {
-        MyApplication.isSupportOaid = isSupportOaid;
-    }
-
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        JLibrary.InitEntry(base);
+        OaidHelper.getInstance().attachBaseContext(base);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        //获取OAID等设备标识符
-        MiitHelper miitHelper = new MiitHelper(appIdsUpdater);
-        miitHelper.getDeviceIds(getApplicationContext());
+        OaidHelper.getInstance().getDeviceIds(this);
     }
-
-    private MiitHelper.AppIdsUpdater appIdsUpdater = new MiitHelper.AppIdsUpdater() {
-        @Override
-        public void OnIdsAvalid(@NonNull String ids) {
-            Log.e("++++++ids: ", ids);
-            oaid = ids;
-        }
-    };
 
 }
